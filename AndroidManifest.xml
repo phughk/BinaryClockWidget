@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.binaryclockwidget"
+    package="com.phughk.binaryclock"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -13,14 +13,20 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
-	    <receiver android:name="BinaryClockAppWidgetProvider" >
+	    <receiver android:name="com.phughk.binaryclock.widget.BinaryClockAppWidgetProvider" >
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 		    </intent-filter>
 		    <meta-data android:name="android.appwidget.provider"
-		               android:resource="@xml/binary_clock_app_rsource_provider_info" />
+		               android:resource="@xml/binary_clock_app_resource_provider_info" />
 		</receiver>
-        
+		
+		<activity android:name=".BinaryClockAppWidgetConfigure">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+		    </intent-filter>
+		</activity>
+       
     </application>
     
 </manifest>
