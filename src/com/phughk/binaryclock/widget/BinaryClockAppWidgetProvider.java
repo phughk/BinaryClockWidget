@@ -41,6 +41,7 @@ onReceive(Context, Intent)
 	 * It is the responsibility of the configuration Activity to perform the first update
 	 * when configuration is done. (See Creating an App Widget Configuration Activity below.)
 	 */
+	/*
 	public void onUpdate(Context c, AppWidgetManager appWidgetManager, int[] appWidgetIds)
 	{
 		for (int i=0; i<appWidgetIds.length; i++)
@@ -51,4 +52,5 @@ onReceive(Context, Intent)
 			
 		}
 	}
+	*/
 }
