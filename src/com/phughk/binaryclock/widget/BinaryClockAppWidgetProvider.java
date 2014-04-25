@@ -21,12 +21,11 @@ import android.widget.Toast;
 public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 {
 	static Rect r = new Rect(0, 0, 400, 300);
-    static Bitmap bmp = Bitmap.createBitmap(r.right-r.left, r.bottom-r.top, Bitmap.Config.RGB_565);
+    static Bitmap bmp = Bitmap.createBitmap(r.right-r.left, r.bottom-r.top, Bitmap.Config.ARGB_8888);
 	
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds)
 	{
-		// TODO Auto-generated method stub
 		// super.onDeleted(context, appWidgetIds);
 		Toast.makeText(context, "onDeleted()", Toast.LENGTH_LONG).show();
 	}
@@ -34,7 +33,6 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 	@Override
 	public void onDisabled(Context context)
 	{
-		// TODO Auto-generated method stub
 		// super.onDisabled(context);
 		Toast.makeText(context, "onDisabled()", Toast.LENGTH_LONG).show();
 	}
@@ -42,7 +40,6 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 	@Override
 	public void onEnabled(Context context)
 	{
-		// TODO Auto-generated method stub
 		// super.onEnabled(context);
 		Toast.makeText(context, "onEnabled()", Toast.LENGTH_LONG).show();
 	}
@@ -59,12 +56,10 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 		for (int appWidgetID: appWidgetIds)
 		{
 			RemoteViews updateViews = new RemoteViews(context.getPackageName(), com.phughk.binaryclock.R.layout.binary_clock_widget_layout);
-//	        updateViews.setTextViewText(com.phughk.binaryclock.R.id.title, "it works");
 	        updateViews.setImageViewBitmap(com.phughk.binaryclock.R.id.clockImage, bmp);
 	        
 	        appWidgetManager.updateAppWidget(appWidgetID, updateViews);
 		}
-//		Toast.makeText(context, "onUpdate()", Toast.LENGTH_LONG).show();
 
 	}
 	
@@ -101,6 +96,7 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
         		clock[x][y]=getBit(val, 3-y);
             }
         }
+        
         // draw binary table
 		int width = (r.right-r.left)/6;
 		int height = (r.bottom-r.top)/4;
@@ -109,7 +105,7 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
         	for (int y=0; y<4; y++)
         	{
         		// get tile rect
-        		Rect tile = new Rect(x*width, y*height, (x+1)*width, (y+1)*height);
+        		Rect tile = new Rect(x*width+1, y*height+1, (x+1)*width-1, (y+1)*height-1); // The +/-1 is for borders
         		if (clock[x][y])
         		{
         			paint.setColor(Color.CYAN);
