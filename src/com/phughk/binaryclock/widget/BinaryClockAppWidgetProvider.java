@@ -6,12 +6,14 @@ import android.R;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.sax.StartElementListener;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.webkit.WebView.FindListener;
@@ -27,21 +29,25 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 	public void onDeleted(Context context, int[] appWidgetIds)
 	{
 		// super.onDeleted(context, appWidgetIds);
-		Toast.makeText(context, "onDeleted()", Toast.LENGTH_LONG).show();
+		Toast.makeText(context, "onDeleted()", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public void onDisabled(Context context)
 	{
 		// super.onDisabled(context);
-		Toast.makeText(context, "onDisabled()", Toast.LENGTH_LONG).show();
+		Intent i = new Intent(context, BinaryClockService.class);
+		context.stopService(i);
+		Toast.makeText(context, "onDisabled()", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public void onEnabled(Context context)
 	{
 		// super.onEnabled(context);
-		Toast.makeText(context, "onEnabled()", Toast.LENGTH_LONG).show();
+		Intent i = new Intent(context, BinaryClockService.class);
+		context.startService(i);
+		Toast.makeText(context, "onEnabled()", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
