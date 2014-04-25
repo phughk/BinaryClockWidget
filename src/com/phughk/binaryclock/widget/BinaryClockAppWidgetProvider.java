@@ -1,5 +1,7 @@
 package com.phughk.binaryclock.widget;
 
+import java.util.Calendar;
+
 import android.R;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -9,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.webkit.WebView.FindListener;
@@ -17,11 +20,9 @@ import android.widget.Toast;
 
 public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 {
-	// private SimpleDateFormat formatter = new
-	// SimpleDateFormat("dd MMM yyyy  hh:mm:ss a");
-	String strWidgetText = "";
-    Bitmap bmp = Bitmap.createBitmap(400, 300, Bitmap.Config.RGB_565);
-
+	static Rect r = new Rect(0, 0, 400, 300);
+    static Bitmap bmp = Bitmap.createBitmap(r.right-r.left, r.bottom-r.top, Bitmap.Config.RGB_565);
+	
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds)
 	{
@@ -50,29 +51,75 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds)
 	{
+		super.onUpdate(context, appWidgetManager, appWidgetIds);
         //Do drawing
         Canvas c = new Canvas(bmp);
-        Paint paint = new Paint();
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(1);
-//        paint.setStyle(Style.FILL);
-//        c.drawText("works", 100.0f, 100.0f, paint);
-//        c.drawPaint(paint);
-        
-        c.drawRect(0, 0, 400, 300, paint);
-        paint.setColor(Color.BLUE);
-        c.drawRect(10, 10, 390, 290, paint);
+        drawClock(c);
         
 		for (int appWidgetID: appWidgetIds)
 		{
 			RemoteViews updateViews = new RemoteViews(context.getPackageName(), com.phughk.binaryclock.R.layout.binary_clock_widget_layout);
-	        updateViews.setTextViewText(com.phughk.binaryclock.R.id.title, "it works");
+//	        updateViews.setTextViewText(com.phughk.binaryclock.R.id.title, "it works");
 	        updateViews.setImageViewBitmap(com.phughk.binaryclock.R.id.clockImage, bmp);
 	        
 	        appWidgetManager.updateAppWidget(appWidgetID, updateViews);
 		}
-		super.onUpdate(context, appWidgetManager, appWidgetIds);
-		Toast.makeText(context, "onUpdate()", Toast.LENGTH_LONG).show();
+//		Toast.makeText(context, "onUpdate()", Toast.LENGTH_LONG).show();
 
+	}
+	
+	private static boolean getBit(int d, int b)
+	{
+		while (b>0)
+		{
+			d=d/2;
+			b--;
+		}
+		return (d%2==1?true:false);
+	}
+	
+	public static void drawClock(Canvas c)
+	{
+        Paint paint = new Paint();
+        boolean clock[][] = new boolean[6][4]; // 6x4 clock, bcd clock
+        
+        // get time
+        Calendar cal = Calendar.getInstance();
+        int hours = cal.get(Calendar.HOUR);
+        int minutes = cal.get(Calendar.MINUTE);
+        int seconds = cal.get(Calendar.SECOND);
+        
+        int[] fields = {hours, minutes, seconds};
+        
+        // Convert to binary
+        for (int x=0; x<6; x++)
+        {
+        	for (int y=3; y>=0; y--)
+        	{
+        		int field = fields[x/2];
+        		int val = (x%2==0 ? field/10 : field%10); // get the respective decimal position to convert to binary
+        		clock[x][y]=getBit(val, 3-y);
+            }
+        }
+        // draw binary table
+		int width = (r.right-r.left)/6;
+		int height = (r.bottom-r.top)/4;
+        for (int x=0; x<6; x++)
+        {
+        	for (int y=0; y<4; y++)
+        	{
+        		// get tile rect
+        		Rect tile = new Rect(x*width, y*height, (x+1)*width, (y+1)*height);
+        		if (clock[x][y])
+        		{
+        			paint.setColor(Color.CYAN);
+        		}
+        		else
+        		{
+        			paint.setColor(Color.TRANSPARENT);
+        		}
+        		c.drawRect(tile, paint);
+        	}
+        }
 	}
 }
