@@ -18,22 +18,24 @@ public class BinaryClockService extends Service
 		public void handleMessage(android.os.Message msg)
 		{
 			super.handleMessage(msg);
-//			Toast.makeText(BinaryClockService.this, "update", Toast.LENGTH_SHORT).show();
+
 			Intent intent = new Intent(BinaryClockService.this, BinaryClockAppWidgetProvider.class);
 			intent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
-			// Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
-			// since it seems the onUpdate() is only fired on that:
+
+			// These are loaded just to get details for the intent (mainly the list of id's)
 			AppWidgetManager appMan = AppWidgetManager.getInstance(BinaryClockService.this);
 			ComponentName provider = new ComponentName(BinaryClockService.this, BinaryClockAppWidgetProvider.class);
+
+			// Update all widgets
 			int[] ids = appMan.getAppWidgetIds(provider);
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+			
 			sendBroadcast(intent);
 
-//			RemoteViews rv = new RemoteViews(getPackageName(), com.phughk.binaryclock.R.layout.binary_clock_widget_layout);
-//			appMan.updateAppWidget(provider, rv);
 		};
 	};
 	
+	// Thread is stored in a variable so that we can terminate the service properly.
 	Thread thread = new Thread(new Runnable()
 	{
 		public void run()
@@ -60,14 +62,14 @@ public class BinaryClockService extends Service
 		// TODO Auto-generated method stub
 		super.onCreate();
 		thread.start();
-		Toast.makeText(this, "Service onCreate", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(this, "Service onCreate", Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
 		// TODO Auto-generated method stub
-		Toast.makeText(this, "Service onStartCommand", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(this, "Service onStartCommand", Toast.LENGTH_SHORT).show();
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
@@ -76,8 +78,8 @@ public class BinaryClockService extends Service
 	{
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		thread.interrupt();
-		Toast.makeText(this, "Service onDestroy", Toast.LENGTH_SHORT).show();
+		thread.interrupt(); // Thread.stop is deprecated, interrupt allows the thread to handle termination
+//		Toast.makeText(this, "Service onDestroy", Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override

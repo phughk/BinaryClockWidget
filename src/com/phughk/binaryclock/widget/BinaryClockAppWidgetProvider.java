@@ -22,14 +22,15 @@ import android.widget.Toast;
 
 public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 {
-	static Rect r = new Rect(0, 0, 400, 300);
-    static Bitmap bmp = Bitmap.createBitmap(r.right-r.left, r.bottom-r.top, Bitmap.Config.ARGB_8888);
+	static Rect r = new Rect(0, 0, 400, 300); // This defines the size of the image being drawn.
+											  // I figured it doesn't really matter what size it is since it is resized anyway
+											  // Tile calculations reference this value
 	
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds)
 	{
 		// super.onDeleted(context, appWidgetIds);
-		Toast.makeText(context, "onDeleted()", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(context, "onDeleted()", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -38,7 +39,7 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 		// super.onDisabled(context);
 		Intent i = new Intent(context, BinaryClockService.class);
 		context.stopService(i);
-		Toast.makeText(context, "onDisabled()", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(context, "onDisabled()", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -47,7 +48,7 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 		// super.onEnabled(context);
 		Intent i = new Intent(context, BinaryClockService.class);
 		context.startService(i);
-		Toast.makeText(context, "onEnabled()", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(context, "onEnabled()", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -56,6 +57,7 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 	{
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
         //Do drawing
+	    Bitmap bmp = Bitmap.createBitmap(r.right-r.left, r.bottom-r.top, Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(bmp);
         drawClock(c);
         
@@ -69,6 +71,12 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 
 	}
 	
+	/**
+	 * Get the specific bit of a integer
+	 * @param d The integer that we want to read
+	 * @param b The index of the bit that we want
+	 * @return true if bit was set, otherwise false
+	 */
 	private static boolean getBit(int d, int b)
 	{
 		while (b>0)
@@ -79,6 +87,10 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 		return (d%2==1?true:false);
 	}
 	
+	/**
+	 * Gets the time, makes a 6x4 boolean matrix and draws it
+	 * @param c Context of the bitmap you want to draw on
+	 */
 	public static void drawClock(Canvas c)
 	{
         Paint paint = new Paint();
@@ -90,29 +102,38 @@ public class BinaryClockAppWidgetProvider extends AppWidgetProvider
         int minutes = cal.get(Calendar.MINUTE);
         int seconds = cal.get(Calendar.SECOND);
         
-        int[] fields = {hours, minutes, seconds};
+        int[] fields = {hours, minutes, seconds}; // The values are put into an array to make the calculations below work more dynamically (see: int field)
         
         // Convert to binary
         for (int x=0; x<6; x++)
         {
         	for (int y=3; y>=0; y--)
         	{
-        		int field = fields[x/2];
+        		int field = fields[x/2]; // Which int are we working on
         		int val = (x%2==0 ? field/10 : field%10); // get the respective decimal position to convert to binary
-        		clock[x][y]=getBit(val, 3-y);
+        		clock[x][y]=getBit(val, 3-y); // Get the bit of the selected decimal
             }
         }
         
-        // draw binary table
+        // calculate tile size(6x4)
 		int width = (r.right-r.left)/6;
 		int height = (r.bottom-r.top)/4;
+
+		// Draw border, 4 lines
+		paint.setColor(Color.BLACK);
+		c.drawLine(r.left, r.top, r.right-1, r.top, paint);
+		c.drawLine(r.left, r.top, r.left, r.bottom-1, paint);
+		c.drawLine(r.right-1, r.top, r.right-1, r.bottom-1, paint);
+		c.drawLine(r.left, r.bottom-1, r.right-1, r.bottom-1, paint);
+		
+		// draw clock
         for (int x=0; x<6; x++)
         {
         	for (int y=0; y<4; y++)
         	{
-        		// get tile rect
+        		// get tile to currently draw
         		Rect tile = new Rect(x*width+1, y*height+1, (x+1)*width-1, (y+1)*height-1); // The +/-1 is for borders
-        		if (clock[x][y])
+        		if (clock[x][y]) // Decide to draw or not
         		{
         			paint.setColor(Color.CYAN);
         		}

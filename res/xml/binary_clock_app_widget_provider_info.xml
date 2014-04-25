@@ -5,4 +5,7 @@
 	android:updatePeriodMillis="300"
 	android:initialLayout="@layout/binary_clock_widget_layout"
 	>
+	<!-- 
+	The updatePeriodMillis defined here is meaningless - the minimum value is half an hour. Updates are done via the service BinaryClockService.
+	 -->
 </appwidget-provider>
