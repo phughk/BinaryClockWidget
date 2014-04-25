@@ -1,33 +1,72 @@
 package com.phughk.binaryclock.widget;
+
 import android.R;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.view.SurfaceView;
+import android.webkit.WebView.FindListener;
 import android.widget.RemoteViews;
-
+import android.widget.Toast;
 
 public class BinaryClockAppWidgetProvider extends AppWidgetProvider
 {
-	/**
-	 * This is called to update the App Widget at intervals defined by the updatePeriodMillis attribute
-	 * in the AppWidgetProviderInfo (see Adding the AppWidgetProviderInfo Metadata above).
-	 * This method is also called when the user adds the App Widget, so it should perform the essential setup,
-	 * such as define event handlers for Views and start a temporary Service, if necessary.
-	 * However, if you have declared a configuration Activity, this method is not called
-	 * when the user adds the App Widget, but is called for the subsequent updates.
-	 * It is the responsibility of the configuration Activity to perform the first update
-	 * when configuration is done. (See Creating an App Widget Configuration Activity below.)
-	 */
-	/*
-	public void onUpdate(Context c, AppWidgetManager appWidgetManager, int[] appWidgetIds)
+	// private SimpleDateFormat formatter = new
+	// SimpleDateFormat("dd MMM yyyy  hh:mm:ss a");
+	String strWidgetText = "";
+    Bitmap bmp = Bitmap.createBitmap(100, 100, Bitmap.Config.RGB_565);
+
+	@Override
+	public void onDeleted(Context context, int[] appWidgetIds)
 	{
-		for (int i=0; i<appWidgetIds.length; i++)
-		{
-			//TODO Do update here
-			RemoteViews views = new RemoteViews(c.getPackageName(), com.phughk.binaryclock.R.layout.binary_clock_widget_layout);
-			appWidgetManager.updateAppWidget(appWidgetIds[i], views);
-			
-		}
+		// TODO Auto-generated method stub
+		// super.onDeleted(context, appWidgetIds);
+		Toast.makeText(context, "onDeleted()", Toast.LENGTH_LONG).show();
 	}
-	*/
+
+	@Override
+	public void onDisabled(Context context)
+	{
+		// TODO Auto-generated method stub
+		// super.onDisabled(context);
+		Toast.makeText(context, "onDisabled()", Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	public void onEnabled(Context context)
+	{
+		// TODO Auto-generated method stub
+		// super.onEnabled(context);
+		Toast.makeText(context, "onEnabled()", Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
+			int[] appWidgetIds)
+	{
+        //Do drawing
+        Canvas c = new Canvas(bmp);
+        Paint paint = new Paint();
+        paint.setColor(Color.CYAN);
+        paint.setStyle(Style.FILL);
+        c.drawText("works", 100.0f, 100.0f, paint);
+        c.drawPaint(paint);
+        
+		for (int appWidgetID: appWidgetIds)
+		{
+			RemoteViews updateViews = new RemoteViews(context.getPackageName(), com.phughk.binaryclock.R.layout.binary_clock_widget_layout);
+	        updateViews.setTextViewText(com.phughk.binaryclock.R.id.title, "it works");
+	        updateViews.setImageViewBitmap(com.phughk.binaryclock.R.id.clockImage, bmp);
+
+	        appWidgetManager.updateAppWidget(appWidgetID, updateViews);
+		}
+		super.onUpdate(context, appWidgetManager, appWidgetIds);
+		Toast.makeText(context, "onUpdate()", Toast.LENGTH_LONG).show();
+
+	}
 }
